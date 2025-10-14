@@ -3,7 +3,7 @@ name: Test SSH Connection
 on:
   push:
     branches:
-      - main  # or the branch you want to test
+      - master  # or the branch you want to test
 
 jobs:
   test-ssh:
