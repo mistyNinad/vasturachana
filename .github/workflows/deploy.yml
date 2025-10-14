@@ -1,23 +1,52 @@
-name: Test SSH Connection
+name: Deploy Angular + Java to EC2
 
 on:
   push:
     branches:
-      - master  # or the branch you want to test
+      - master
 
 jobs:
-  test-ssh:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    # Step 1: Checkout code
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Start SSH agent
-        uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+    # Step 2: Start SSH agent with private key
+    - name: Start SSH agent
+      uses: webfactory/ssh-agent@v0.9.1
+      with:
+        ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
-      - name: Test SSH connection
-        run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@13.48.14.89 "echo 'SSH connection successful!'"
+    # Step 3: Deploy to EC2
+    - name: SSH and deploy
+      run: |
+        ssh -o StrictHostKeyChecking=no ubuntu@13.48.14.89<< 'EOF'
+          set -e
+
+          # Go to project directory
+          cd /home/ubuntu/vasturachna/vasturachna
+
+          # Pull latest code
+          git fetch --all
+          git reset --hard origin/main
+
+          # Backend: Build Spring Boot
+          ./mvnw clean package -DskipTests
+
+          # Restart backend systemd service
+          sudo systemctl restart my-backend
+
+          # Frontend: Build Angular
+          cd   home/ubuntu/ui/vasturachna-ui		 
+          npm install
+          npm run build --prod
+
+          # Copy Angular dist to nginx folder
+          sudo rm -rf /var/www/html/*
+          sudo cp -r dist/* /var/www/html/
+
+          echo "Deployment completed successfully!"
+        EOF
