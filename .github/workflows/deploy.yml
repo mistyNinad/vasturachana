@@ -10,43 +10,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout code
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    # Step 2: Start SSH agent with private key
-    - name: Start SSH agent
-      uses: webfactory/ssh-agent@v0.9.1
-      with:
-        ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+      - name: Start SSH agent
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
-    # Step 3: Deploy to EC2
-    - name: SSH and deploy
-      run: |
-        ssh -o StrictHostKeyChecking=no ubuntu@13.48.14.89<< 'EOF'
-          set -e
+      - name: SSH and deploy
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@13.48.14.89 << 'EOF'
+            set -e
 
-          # Go to project directory
-          cd /home/ubuntu/vasturachna/vasturachana
+            echo "--- Pulling latest backend code ---"
+            cd /home/ubuntu/vasturachna/vasturachana
+            git fetch --all
+            git reset --hard origin/master
 
-          # Pull latest code
-          git fetch --all
-          git reset --hard origin/master
+            echo "--- Building Spring Boot backend ---"
+            ./mvnw clean package -DskipTests
 
-          # Backend: Build Spring Boot
-          ./mvnw clean package -DskipTests
+            echo "--- Restarting backend service ---"
+            sudo systemctl restart my-backend
 
-          # Restart backend systemd service
-          sudo systemctl restart my-backend
+            echo "--- Building Angular frontend ---"
+            cd /home/ubuntu/ui/vasturachna-ui/my-app
+            npm install -g @angular/cli
+            npm install
+            npx ng build --configuration production
 
-          # Frontend: Build Angular
-          cd   /home/ubuntu/ui/vasturachna-ui		 
-          npm install
-          npm run build --production
+            echo "--- Deploying frontend to Nginx ---"
+            sudo rm -rf /var/www/html/*
+            sudo cp -r dist/vasturachna-ui/my-app/* /var/www/html/
 
-          # Copy Angular dist to nginx folder
-          sudo rm -rf /var/www/html/*
-          sudo cp -r dist/* /var/www/html/
-
-          echo "Deployment completed successfully!"
-        EOF
+            echo "✅ Deployment completed successfully!"
+          EOF
