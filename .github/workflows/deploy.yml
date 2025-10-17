@@ -36,7 +36,7 @@ jobs:
 
             echo "--- Building Angular frontend ---"
             cd /home/ubuntu/ui/vasturachna-ui/my-app
-            npm install -g @angular/cli
+            npm install @angular/cli
             npm install
             npx ng build --configuration production
 
