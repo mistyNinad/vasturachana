@@ -54,7 +54,7 @@ jobs:
 
             echo "--- Deploying frontend to Nginx ---"
             sudo rm -rf /var/www/html/*
-            sudo cp -r /home/ubuntu/ui/vasturachna-ui/my-app/dist/my-app/* /var/www/html/
+            sudo cp -r /home/ubuntu/ui/vasturachna-ui/my-app/dist/my-app/browser/* /var/www/html/
             sudo systemctl reload nginx
 
             echo "✅ Deployment completed successfully!"
