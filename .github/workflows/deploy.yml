@@ -46,6 +46,9 @@ jobs:
             echo "--- Installing dependencies ---"
             npm ci  # faster, cleaner than npm install
 
+            echo "--- Installing Angular CLI (locally) ---"
+            npm install @angular/cli@latest --save-dev
+            
             echo "--- Building Angular frontend ---"
             npx ng build --configuration production
 
