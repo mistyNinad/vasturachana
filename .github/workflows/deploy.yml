@@ -42,7 +42,7 @@ jobs:
           # Frontend: Build Angular
           cd   /home/ubuntu/ui/vasturachna-ui		 
           npm install
-          npm run build --prod
+          npm run build --production
 
           # Copy Angular dist to nginx folder
           sudo rm -rf /var/www/html/*
