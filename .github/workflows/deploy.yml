@@ -42,7 +42,7 @@ jobs:
 
             echo "--- Deploying frontend to Nginx ---"
             sudo rm -rf /var/www/html/*
-            sudo cp -r dist/vasturachna-ui/my-app/* /var/www/html/
+            sudo cp -r my-app/dist/my-app/* /var/www/html/
 
             echo "✅ Deployment completed successfully!"
           EOF
