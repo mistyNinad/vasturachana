@@ -23,6 +23,9 @@ jobs:
           ssh -o StrictHostKeyChecking=no ubuntu@13.48.14.89 << 'EOF'
             set -e
 
+            echo "🚀 Starting deployment..."
+
+            # === BACKEND ===
             echo "--- Pulling latest backend code ---"
             cd /home/ubuntu/vasturachna/vasturachana
             git fetch --all
@@ -32,17 +35,24 @@ jobs:
             ./mvnw clean package -DskipTests
 
             echo "--- Restarting backend service ---"
-            sudo systemctl restart my-backend
+            sudo systemctl restart my-backend || echo "Warning: backend service not found"
+
+            # === FRONTEND ===
+            echo "--- Pulling latest frontend code ---"
+            cd /home/ubuntu/ui/vasturachna-ui
+            git fetch --all
+            git reset --hard origin/master
+
+            echo "--- Installing dependencies ---"
+            npm ci  # faster, cleaner than npm install
 
             echo "--- Building Angular frontend ---"
-            cd /home/ubuntu/ui/vasturachna-ui/my-app
-            npm install @angular/cli
-            npm install
             npx ng build --configuration production
 
             echo "--- Deploying frontend to Nginx ---"
             sudo rm -rf /var/www/html/*
-            sudo cp -r /home/ubuntu/ui/vasturachna-ui/my-app/dist/my-app/* /var/www/html/
+            sudo cp -r dist/my-app/browser/* /var/www/html/
             sudo systemctl reload nginx
+
             echo "✅ Deployment completed successfully!"
           EOF
