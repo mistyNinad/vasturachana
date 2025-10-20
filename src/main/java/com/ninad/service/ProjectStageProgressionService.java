@@ -43,47 +43,85 @@ public class ProjectStageProgressionService {
 	        ProjectStageProgression currentProgression = progressionRepo.findByProjectAndStage(project, currentStage)
 	                .orElseThrow(() -> new RuntimeException("Current progression not found"));
 
-	        // Complete current stage
+	        // ✅ Complete current stage
 	        currentProgression.setStatus(statusService.getStatusByCode("COMPLETED").get());
 	        currentProgression.setCompletedBy(completedBy);
 	        currentProgression.setCompletedOn(LocalDateTime.now());
 	        progressionRepo.save(currentProgression);
 
-	        // Determine next stage
 	        Stage nextStage = null;
 
 	        if (currentStage.getParentStage() != null) {
-	            // current stage is a sub-stage
-	            nextStage = stageRepo
-	                    .findFirstByParentStageAndOrderIndexGreaterThanOrderByOrderIndexAsc(
-	                            currentStage.getParentStage(), currentStage.getOrderIndex())
-	                    .orElse(null);
+	            // 📍 Current stage is a sub-stage (child)
+
+	            // Find next sibling sub-stage
+	            nextStage = stageRepo.findFirstByParentStageAndOrderIndexGreaterThanOrderByOrderIndexAsc(
+	                    currentStage.getParentStage(), currentStage.getOrderIndex()
+	            ).orElse(null);
 
 	            if (nextStage == null) {
-	                // no more sub-stages, move to next main stage
+	                // ✅ No more sub-stages — mark parent main stage as COMPLETED now
+	                Stage parentStage = currentStage.getParentStage();
+	                ProjectStageProgression parentProgression = progressionRepo.findByProjectAndStage(project, parentStage)
+	                        .orElse(null);
+
+	                if (parentProgression == null) {
+	                    // create parent stage progression if missing
+	                    parentProgression = new ProjectStageProgression();
+	                    parentProgression.setProject(project);
+	                    parentProgression.setStage(parentStage);
+	                }
+
+	                parentProgression.setStatus(statusService.getStatusByCode("COMPLETED").get());
+	                parentProgression.setCompletedBy(completedBy);
+	                parentProgression.setCompletedOn(LocalDateTime.now());
+	                progressionRepo.save(parentProgression);
+
+	                // ✅ Move to next main stage
 	                nextStage = stageRepo.findFirstByParentStageIsNullAndOrderIndexGreaterThanOrderByOrderIndexAsc(
-	                        currentStage.getParentStage().getOrderIndex()).orElse(null);
+	                        parentStage.getOrderIndex()
+	                ).orElse(null);
+
+	                // If the next main stage has sub-stages, go to its first child
+	                if (nextStage != null) {
+	                    Optional<Stage> firstSubStage = stageRepo.findFirstByParentStageOrderByOrderIndexAsc(nextStage);
+	                    if (firstSubStage.isPresent()) {
+	                        nextStage = firstSubStage.get();
+	                    }
+	                }
 	            }
+
 	        } else {
-	            // current stage is main stage
+	            // 📍 Current stage is a main stage
+
+	            // If main stage has sub-stages, advance to the first sub-stage (not mark it complete)
 	            Optional<Stage> firstSubStage = stageRepo.findFirstByParentStageOrderByOrderIndexAsc(currentStage);
 	            if (firstSubStage.isPresent()) {
 	                nextStage = firstSubStage.get();
 	            } else {
-	                // move to next main stage
+	                // Otherwise, move directly to next main stage
 	                nextStage = stageRepo.findFirstByParentStageIsNullAndOrderIndexGreaterThanOrderByOrderIndexAsc(
-	                        currentStage.getOrderIndex()).orElse(null);
+	                        currentStage.getOrderIndex()
+	                ).orElse(null);
+
+	                // If the next main stage has sub-stages, go to its first one
+	                if (nextStage != null) {
+	                    Optional<Stage> firstSubStageOfNext = stageRepo.findFirstByParentStageOrderByOrderIndexAsc(nextStage);
+	                    if (firstSubStageOfNext.isPresent()) {
+	                        nextStage = firstSubStageOfNext.get();
+	                    }
+	                }
 	            }
 	        }
 
+	        // 🏁 Project completed if no next stage
 	        if (nextStage == null) {
-	            // project completed
 	            project.setCurrentStage(null);
 	            projectRepo.save(project);
 	            return null;
 	        }
 
-	        // create next progression
+	        // ✅ Create next progression entry
 	        ProjectStageProgression nextProgression = new ProjectStageProgression();
 	        nextProgression.setProject(project);
 	        nextProgression.setStage(nextStage);
@@ -91,12 +129,15 @@ public class ProjectStageProgressionService {
 	        nextProgression.setStartedOn(LocalDateTime.now());
 	        progressionRepo.save(nextProgression);
 
-	        // update project
+	        // ✅ Update project’s current stage
 	        project.setCurrentStage(nextStage);
 	        projectRepo.save(project);
-	        System.out.println(" updated proj with new stage, progression");
+
+	        System.out.println("➡️ Advanced project to next stage: " + nextStage.getName());
 	        return mapToTO(nextProgression);
 	    }
+
+
 	    
 	    @Transactional
 	    public List<ProjectStageProgressionTO> findByProjectId(int projectId) {
