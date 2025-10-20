@@ -31,7 +31,7 @@ public class SecurityConfig {
     	
     	System.out.println("*&^*&^%&^*&(************%&^(**&(*&)(#*$)(#*)(*@#$*#@_$*#@)%&&*&$(*#@&$(#@*&(@#&$(@#");
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200")); // Angular dev server
+        configuration.setAllowedOrigins(Arrays.asList("https://www.shubhavastu.in","http://localhost:4200")); // Angular dev server
         configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*")); // allow all headers
         configuration.setAllowCredentials(true);
