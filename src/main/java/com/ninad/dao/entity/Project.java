@@ -33,8 +33,8 @@ public class Project {
 	
 	String location;
 	
-	@Column(name = "project_cost")
-	Double projectCost;
+	@Column(name = "construction_cost")
+	Double projectConstructionCost;
 	
 	@Column(name = "estimated_cost")
 	Double estimatedCost;
@@ -142,12 +142,12 @@ public class Project {
 		this.user = user;
 	}
 
-	public Double getProjectCost() {
-		return projectCost;
+	public Double getProjectConstructionCost() {
+		return projectConstructionCost;
 	}
 
-	public void setProjectCost(Double projectCost) {
-		this.projectCost = projectCost;
+	public void setProjectConstructionCost(Double projectCost) {
+		this.projectConstructionCost = projectCost;
 	}
 
 	

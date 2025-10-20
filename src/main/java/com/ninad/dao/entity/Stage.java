@@ -35,6 +35,7 @@ public class Stage {
     @OneToMany(mappedBy = "parentStage", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Stage> subStages = new ArrayList<>();
 
+    private Double paymentPercentage; // NEW FIELD
 
 	public Long getId() {
 		return id;
@@ -103,6 +104,16 @@ public class Stage {
 
 	public void setSubStages(List<Stage> subStages) {
 		this.subStages = subStages;
+	}
+
+
+	public Double getPaymentPercentage() {
+		return paymentPercentage;
+	}
+
+
+	public void setPaymentPercentage(Double paymentPercentage) {
+		this.paymentPercentage = paymentPercentage;
 	}
     
     

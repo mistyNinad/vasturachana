@@ -13,6 +13,8 @@ import com.ninad.dao.entity.repo.StatusRepository;
 import com.ninad.to.ProjectStageProgressionTO;
 import com.ninad.to.StageTO;
 
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -96,24 +98,44 @@ public class ProjectStageProgressionService {
 	        return mapToTO(nextProgression);
 	    }
 	    
-	    
+	    @Transactional
+	    public List<ProjectStageProgressionTO> findByProjectId(int projectId) {
+	        return progressionRepo.findByProjectId(projectId)
+	                .stream()
+	                .map(this::mapToTO)
+	                .toList();
+	    }
+
 	    private ProjectStageProgressionTO mapToTO(ProjectStageProgression progression) {
 	        ProjectStageProgressionTO to = new ProjectStageProgressionTO();
 	        to.setId(progression.getId());
 
+	        // --- Stage mapping ---
 	        Stage stage = progression.getStage();
-	        StageTO stageTO = new StageTO();
-	        stageTO.setId(stage.getId());
-	        stageTO.setParentid(stage.getParentStage() != null ? stage.getParentStage().getId() : null);
-	        stageTO.setParentStageName(stage.getParentStage() != null ? stage.getParentStage().getName() : null);
-	        stageTO.setName(stage.getName());
-	        stageTO.setDescriptop(stage.getDescription());
-	        stageTO.setOrder(stage.getOrderIndex());
-	        
-	        to.setStage(stageTO);
-	        to.setStatus(progression.getStatus().getCode());
+	        if (stage != null) {
+	            StageTO stageTO = new StageTO();
+	            stageTO.setId(stage.getId());
+	            stageTO.setParentid(stage.getParentStage() != null ? stage.getParentStage().getId() : null);
+	            stageTO.setParentStageName(stage.getParentStage() != null ? stage.getParentStage().getName() : null);
+	            stageTO.setName(stage.getName());
+	            stageTO.setDescription(stage.getDescription());
+	            stageTO.setOrder(stage.getOrderIndex());
+	            to.setStage(stageTO);
+	        }
+
+	        // --- Progression info ---
+	        if (progression.getStatus() != null) {
+	            to.setStatus(progression.getStatus().getCode());
+	        }
+
 	        to.setStartedOn(progression.getStartedOn());
 	        to.setCompletedOn(progression.getCompletedOn());
+	        to.setRemarks(progression.getRemarks());
+
+	        // --- Completed by user ---
+	        if (progression.getCompletedBy() != null) {
+	            to.setCompletedBy(progression.getCompletedBy().getName());
+	        }
 
 	        return to;
 	    }

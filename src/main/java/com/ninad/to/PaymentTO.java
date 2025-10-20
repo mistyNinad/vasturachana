@@ -11,6 +11,8 @@ public class PaymentTO {
       private String referenceNumber;
       private String remarks;
       private String statusCode;
+      
+      private String dueAmount;
 
       // --- Getters & Setters ---
       public int getProjectId() { return projectId; }
@@ -33,4 +35,12 @@ public class PaymentTO {
 
       public String getStatusCode() { return statusCode; }
       public void setStatusCode(String statusCode) { this.statusCode = statusCode; }
+	  public String getDueAmount() {
+		  return dueAmount;
+	  }
+	  public void setDueAmount(String dueAmount) {
+		  this.dueAmount = dueAmount;
+	  }
+      
+      
 }

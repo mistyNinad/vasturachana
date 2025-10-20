@@ -1,0 +1,2 @@
+ALTER TABLE stage
+ADD COLUMN payment_percentage DOUBLE DEFAULT 0.0;

@@ -28,6 +28,8 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+    	
+    	System.out.println("*&^*&^%&^*&(************%&^(**&(*&)(#*$)(#*)(*@#$*#@_$*#@)%&&*&$(*#@&$(#@*&(@#&$(@#");
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200")); // Angular dev server
         configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));

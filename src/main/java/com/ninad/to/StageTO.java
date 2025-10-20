@@ -3,12 +3,12 @@ package com.ninad.to;
 public class StageTO {
  
 	long id;
-	long parentid;
+	Long parentid;
 	String parentStageName;
 	String name;
-	String descriptop;
+	String description;
 	int order;
-	
+	double paymentPercentage;
 	
 
 	public long getId() {
@@ -17,12 +17,10 @@ public class StageTO {
 	public void setId(long id) {
 		this.id = id;
 	}
-	public long getParentid() {
+	public Long getParentid() {
 		return parentid;
 	}
-	public void setParentid(long parentid) {
-		this.parentid = parentid;
-	}
+
 	public void setParentid(Long long1) {
 		this.parentid = long1;
 	}
@@ -38,17 +36,24 @@ public class StageTO {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getDescriptop() {
-		return descriptop;
-	}
-	public void setDescriptop(String descriptop) {
-		this.descriptop = descriptop;
-	}
+
 	public int getOrder() {
 		return order;
 	}
 	public void setOrder(int order) {
 		this.order = order;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public double getPaymentPercentage() {
+		return paymentPercentage;
+	}
+	public void setPaymentPercentage(double paymentPercentage) {
+		this.paymentPercentage = paymentPercentage;
 	}
 	
 	

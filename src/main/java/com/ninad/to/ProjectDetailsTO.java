@@ -14,7 +14,7 @@ public class ProjectDetailsTO {
 	
 	String location;
 	
-	Double projectCost;
+	Double projectConstructionCost;
 	
 	Double estimatedCost;
 	
@@ -84,12 +84,12 @@ public class ProjectDetailsTO {
 		this.blueprintDetails = blueprintDetails;
 	}
 
-	public Double getProjectCost() {
-		return projectCost;
+	public Double getProjectConstructionCost() {
+		return projectConstructionCost;
 	}
 
-	public void setProjectCost(Double projectCost) {
-		this.projectCost = projectCost;
+	public void setProjectConstructionCost(Double projectCost) {
+		this.projectConstructionCost = projectCost;
 	}
 
 	public int getId() {

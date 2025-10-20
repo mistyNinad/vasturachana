@@ -27,6 +27,7 @@ import com.ninad.to.BlueprintDetailsTO;
 import com.ninad.to.LandDetailsTO;
 import com.ninad.to.ProjectDetailsTO;
 import com.ninad.to.StageTO;
+import com.ninad.to.UserTO;
 
 import jakarta.transaction.Transactional;
 
@@ -64,7 +65,7 @@ public class ProjectBOImpl implements ProjectBO {
 	    project.setTitle(projectDetailsTO.getTitle());
 	    project.setOverview(projectDetailsTO.getOverview());
 	    project.setLocation(projectDetailsTO.getLocation());
-	    project.setProjectCost(projectDetailsTO.getProjectCost());
+	    project.setProjectConstructionCost(projectDetailsTO.getProjectConstructionCost());
 	    project.setEstimatedCost(projectDetailsTO.getEstimatedCost());
 	    //project.setCurrentStage(null);
 
@@ -136,7 +137,7 @@ public class ProjectBOImpl implements ProjectBO {
 	                    StageTO stageTO = new StageTO();
 	                    stageTO.setId(stage.getId());
 	                    stageTO.setName(stage.getName());
-	                    stageTO.setDescriptop(stage.getDescription());
+	                    stageTO.setDescription(stage.getDescription());
 	                    stageTO.setOrder(stage.getOrderIndex());
 
 	                    if (stage.getParentStage() != null) {
@@ -187,14 +188,14 @@ public class ProjectBOImpl implements ProjectBO {
 	        to.setTitle(project.getTitle());
 	        to.setOverview(project.getOverview());
 	        to.setLocation(project.getLocation());
-	        to.setProjectCost(project.getProjectCost());
+	        to.setProjectConstructionCost(project.getProjectConstructionCost());
 	        to.setEstimatedCost(project.getEstimatedCost());
 	        Stage stage = project.getCurrentStage();
             if (stage != null) {
                 StageTO stageTO = new StageTO();
                 stageTO.setId(stage.getId());
                 stageTO.setName(stage.getName());
-                stageTO.setDescriptop(stage.getDescription());
+                stageTO.setDescription(stage.getDescription());
                 stageTO.setOrder(stage.getOrderIndex());
 
                 if (stage.getParentStage() != null) {
@@ -228,6 +229,15 @@ public class ProjectBOImpl implements ProjectBO {
 	            blueprintTO.setType(blueprint.getType());
 	            to.setBlueprintDetails(blueprintTO);
 	        }
+	        
+	        User user = project.getUser();
+	        if(null != user) {
+	        	UserTO userTO = new UserTO();
+	        	userTO.setId(user.getId());
+	        	userTO.setName(user.getName());
+	        	userTO.setMobileNumber(user.getMobileNumber());
+	        	to.setUserTO(userTO);
+	        }
 	        return to;
 	    }
 
@@ -241,6 +251,7 @@ public class ProjectBOImpl implements ProjectBO {
 	        project.setOverview(projectTO.getOverview());
 	        project.setLocation(projectTO.getLocation());
 	        project.setEstimatedCost(projectTO.getEstimatedCost());
+	        project.setProjectConstructionCost(projectTO.getProjectConstructionCost());
 
 	        // Update Land Details
 	        if (projectTO.getLandDetails() != null) {
@@ -283,7 +294,9 @@ public class ProjectBOImpl implements ProjectBO {
 	           // stage.setParentStageName(projectTO.getStage().getParentStageName());
 	            //stage.setOrder(projectTO.getStage().getOrder());
 	        }
-
+		    User user = new User();
+		    user.setId(projectTO.getUserTO().getId());
+		    project.setUser(user);
 	        Project updated = projectdetailsRepo.save(project);
 
 	        // convert back to TO

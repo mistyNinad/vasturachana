@@ -3,6 +3,7 @@ package com.ninad.controller;
 import com.ninad.dao.entity.ProjectPayment;
 import com.ninad.service.ProjectPaymentService;
 import com.ninad.to.PaymentTO;
+import com.ninad.to.ProjectPaymentSummaryTO;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -37,8 +38,9 @@ public class ProjectPaymentController {
 
     // 🔹 Get all payments for a given project
     @GetMapping("/project/{projectId}")
-    public List<PaymentTO> getPaymentsByProject(@PathVariable int projectId) {
-        return paymentService.getPaymentsByProjet(projectId);
+    public ProjectPaymentSummaryTO getPaymentsByProject(@PathVariable int projectId) {
+        //return paymentService.getPaymentsByProjet(projectId);
+    	return paymentService.getProjectPaymentSummaryTO(projectId);
     }
  
 

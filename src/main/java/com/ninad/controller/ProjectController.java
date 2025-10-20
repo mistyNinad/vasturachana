@@ -75,7 +75,7 @@ public ProjectDetailsTO saveProjectDetails(@RequestBody ProjectDetailsTO project
 }
 
 
-@GetMapping("/projects")
+@GetMapping
 public List<ProjectDetailsTO>  getAllProjects() {
 
 return projectBO.getAllProjects();
@@ -101,6 +101,14 @@ public ResponseEntity<?> advanceStage(@PathVariable Integer id, @RequestBody Map
     User user = userRepo.findById(userId).orElseThrow();
     ProjectStageProgressionTO next = progressionService.advanceStage(project, user);
     return ResponseEntity.ok(next);
+}
+
+@GetMapping("/{projectId}/stage-progressions")
+public ResponseEntity<List<ProjectStageProgressionTO>> getStageProgressions(@PathVariable int projectId) {
+	
+	 List<ProjectStageProgressionTO> progressions = progressionService.findByProjectId(projectId);
+
+    return ResponseEntity.ok(progressions);
 }
 
 }

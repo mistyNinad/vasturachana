@@ -10,6 +10,9 @@ public class ProjectStageProgressionTO {
 	    private String status;
 	    private LocalDateTime startedOn;
 	    private LocalDateTime completedOn;
+	    private String remarks;
+	    private String completedBy;
+	    
 		public int getId() {
 			return id;
 		}
@@ -40,7 +43,17 @@ public class ProjectStageProgressionTO {
 		public void setCompletedOn(LocalDateTime completedOn) {
 			this.completedOn = completedOn;
 		}
-	    
-	    
-	    
+		public String getRemarks() {
+			return remarks;
+		}
+		public void setRemarks(String remarks) {
+			this.remarks = remarks;
+		}
+		public String getCompletedBy() {
+			return completedBy;
+		}
+		public void setCompletedBy(String completedBy) {
+			this.completedBy = completedBy;
+		}
+	 
 }

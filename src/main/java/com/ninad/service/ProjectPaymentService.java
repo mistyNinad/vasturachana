@@ -3,7 +3,9 @@ package com.ninad.service;
 import com.ninad.dao.entity.*;
 import com.ninad.dao.entity.repo.*;
 import com.ninad.to.PaymentTO;
+import com.ninad.to.ProjectPaymentSummaryTO;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,15 +21,19 @@ public class ProjectPaymentService {
     private final ProjectRepo projectRepo;
     private final UserRepo userRepo;
     private final StatusRepository statusRepo;
+    
+    private final ProjectStageProgressionRepository progressionRepo;
+
 
     public ProjectPaymentService(ProjectPaymentRepository paymentRepo,
                                  ProjectRepo projectRepo,
                                  UserRepo userRepo,
-                                 StatusRepository statusRepo) {
+                                 StatusRepository statusRepo,ProjectStageProgressionRepository progressionRepo) {
         this.paymentRepo = paymentRepo;
         this.projectRepo = projectRepo;
         this.userRepo = userRepo;
         this.statusRepo = statusRepo;
+        this.progressionRepo= progressionRepo;
     }
 
     @Transactional
@@ -70,11 +76,57 @@ public class ProjectPaymentService {
     }
     
     public List<PaymentTO> getPaymentsByProjet(int projectId) {
+
         return paymentRepo.findByProjectId(projectId)
                 .stream()
                 .map(this::convertToTO)
                 .toList();
     }
+    
+    public ProjectPaymentSummaryTO getProjectPaymentSummaryTO(int projectId) {
+        Project project = projectRepo.findById(projectId);
+
+        BigDecimal estimatedCost = BigDecimal.valueOf(project.getEstimatedCost());
+
+        // Sum completed stage percentages
+        List<ProjectStageProgression> completedStages = progressionRepo
+                .findByProjectIdAndStatusCode(projectId, "COMPLETED");
+
+        double totalPercentCompleted = completedStages.stream()
+                .mapToDouble(p -> p.getStage().getPaymentPercentage())
+                .sum();
+
+        BigDecimal totalDueByStages = estimatedCost
+                .multiply(BigDecimal.valueOf(totalPercentCompleted))
+                .divide(BigDecimal.valueOf(100));
+
+        // Total payments received
+        BigDecimal totalPaid = paymentRepo.findByProjectId(projectId)
+                .stream()
+                .map(ProjectPayment::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal amountDue = totalDueByStages.subtract(totalPaid).max(BigDecimal.ZERO);
+        
+        BigDecimal totalAmountDue = estimatedCost.subtract(totalPaid).max(BigDecimal.ZERO);
+    	
+    	List<PaymentTO> payments=  paymentRepo.findByProjectId(projectId)
+                .stream()
+                .map(this::convertToTO)
+                .toList();
+        // Build summary DTO
+        ProjectPaymentSummaryTO summary = new ProjectPaymentSummaryTO();
+        summary.setProjectId(projectId);
+        summary.setEstimatedCost(estimatedCost);
+        summary.setTotalPaid(totalPaid);
+        summary.setTotalDueAmount(totalAmountDue);
+        summary.setDueAmount(amountDue);
+        summary.setPayments(payments);
+        summary.setPercentCompleted(BigDecimal.valueOf(totalPercentCompleted));
+        
+        return summary;
+    }
+    
     
     private PaymentTO convertToTO(ProjectPayment payment) {
         PaymentTO to = new PaymentTO();
