@@ -1,6 +1,6 @@
 package com.ninad.configurations;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,34 +16,32 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//            .cors() // <--- enable CORS support
-//            .and()
-//            .csrf(csrf -> csrf.disable()) // disable CSRF for testing
-//            .authorizeHttpRequests(auth -> auth
-//                .anyRequest().permitAll() // allow all endpoints
-//            );
-    	
         http
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()  // ✅ allow preflight requests
-            .requestMatchers("/api/v1/**").permitAll()
-            .anyRequest().permitAll()
-        );
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()  // ✅ allow preflight
+                .requestMatchers("/api/v1/**").permitAll()
+                .anyRequest().permitAll()
+            );
 
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-    	
-    	System.out.println("*&^*&^%&^*&(************%&^(**&(*&)(#*$)(#*)(*@#$*#@_$*#@)%&&*&$(*#@&$(#@*&(@#&$(@#");
+        System.out.println(">>> Loading global CORS config");
+
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://www.shubhavastu.in","http://localhost:4200")); // Angular dev server
-        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*")); // allow all headers
+        // ✅ Use allowedOriginPatterns instead of allowedOrigins for flexibility
+        configuration.setAllowedOriginPatterns(List.of(
+            "https://www.shubhavastu.in",
+            "http://localhost:4200"
+        ));
+
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

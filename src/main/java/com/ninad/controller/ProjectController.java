@@ -33,7 +33,7 @@ import com.ninad.to.ProjectStageProgressionTO;
 
 @RestController
 @RequestMapping("/api/v1/project")
-@CrossOrigin(origins = "http://localhost:4200") 
+//@CrossOrigin(origins = "http://localhost:4200") 
 public class ProjectController {
 
 

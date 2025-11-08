@@ -20,7 +20,7 @@ import com.ninad.to.ProjectDetailsTO;
 import com.ninad.to.StageTO;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200") 
+//@CrossOrigin(origins = "http://localhost:4200") 
 @RequestMapping("/api/v1/stage")
 public class StageController {
 

@@ -29,7 +29,7 @@ import com.ninad.to.UserTO;
 
 @RestController
 @RequestMapping("/api/v1/user")
-@CrossOrigin(origins = "http://localhost:4200") 
+//@CrossOrigin(origins = "http://localhost:4200") 
 public class UserController {
 
 
