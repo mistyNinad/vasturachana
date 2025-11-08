@@ -18,7 +18,7 @@ import com.ninad.dao.entity.repo.UserRepo;
 
 @RestController
 @RequestMapping("/api/v1")
-@CrossOrigin(origins = "http://localhost:4200") 
+//@CrossOrigin(origins = "http://localhost:4200") 
 public class LoginController {
 
 
