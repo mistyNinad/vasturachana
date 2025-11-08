@@ -36,6 +36,7 @@ public class SecurityConfig {
         // ✅ Use allowedOriginPatterns instead of allowedOrigins for flexibility
         configuration.setAllowedOriginPatterns(List.of(
             "https://www.shubhavastu.in",
+            "https://shubhavastu.in",
             "http://localhost:4200"
         ));
 
