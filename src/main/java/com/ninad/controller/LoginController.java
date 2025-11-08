@@ -27,6 +27,7 @@ UserRepo userRepo;
 	
 	@GetMapping("/login")
 	public ResponseEntity<?> login(@RequestParam String userName, @RequestParam String password) {
+		System.out.print("inside login "+ password);
         Optional<User> userOpt = userRepo.findByUsernameAndPassword(userName, password);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
