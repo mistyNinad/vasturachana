@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -15,13 +16,22 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//            .cors() // <--- enable CORS support
+//            .and()
+//            .csrf(csrf -> csrf.disable()) // disable CSRF for testing
+//            .authorizeHttpRequests(auth -> auth
+//                .anyRequest().permitAll() // allow all endpoints
+//            );
+    	
         http
-            .cors() // <--- enable CORS support
-            .and()
-            .csrf(csrf -> csrf.disable()) // disable CSRF for testing
-            .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll() // allow all endpoints
-            );
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()  // ✅ allow preflight requests
+            .requestMatchers("/api/v1/**").permitAll()
+            .anyRequest().permitAll()
+        );
 
         return http.build();
     }
